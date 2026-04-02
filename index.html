@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Filterun</title>
+    <link rel="stylesheet" href="assets/css/filterun.css">
+</head>
+<body class="filterun-body">
+
+<div class="editor-container">
+    <div class="image-preview">
+        <img id="main-image" src="https://picsum.photos/id/26/600/400" alt="Preview">
+    </div>
+
+    <button id="filter-toggle">Filters</button>
+
+    <div id="filter-panel" class="filter-panel hidden">
+
+        <div class="presets">
+            <button onclick="applyPreset('none')">Normal</button>
+            <button onclick="applyPreset('vintage')">Vintage</button>
+            <button onclick="applyPreset('bw')">B&W</button>
+        </div>
+
+        <hr>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Brightness</label>
+                <input type="range" id="brightness" min="0" max="200" value="100">
+            </div>
+
+            <div class="control-group">
+                <label>Contrast</label>
+                <input type="range" id="contrast" min="0" max="200" value="100">
+            </div>
+
+            <div class="control-group">
+                <label>Saturate</label>
+                <input type="range" id="saturate" min="0" max="200" value="100">
+            </div>
+
+            <div class="control-group">
+                <label>Sepia</label>
+                <input type="range" id="sepia" min="0" max="100" value="0">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="assets/js/filterun.js" defer></script>
+</body>
+</html>
