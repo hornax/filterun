@@ -1,0 +1,27 @@
+{
+  "name": "filterun",
+  "version": "1.0.0",
+  "description": "A lightweight, professional image filtering library with 25+ presets and manual controls.",
+  "main": "dist/filterun.min.js",
+  "style": "dist/filterun.min.css",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hornax/filterun.git"
+  },
+  "keywords": [
+    "image-filter",
+    "canvas-presets",
+    "photo-editor",
+    "css-filters",
+    "vignette"
+  ],
+  "author": "Andrii Sivkovych",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hornax/filterun/issues"
+  },
+  "homepage": "https://github.com/hornax/filterun#readme"
+}

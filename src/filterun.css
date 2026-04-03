@@ -38,7 +38,10 @@
     box-shadow: var(--fltrn-vignette, inset 0 0 0 rgba(0,0,0,0.7));
 }
 
-.fltrn-preview-container img {
+.fltrn-preview-container img,
+.fltrn-preview-container svg,
+.fltrn-preview-container video
+{
     width: 100%;
     display: block;
     background: #000;
