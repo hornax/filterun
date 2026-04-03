@@ -68,6 +68,8 @@ class Filterun {
                     ${this.renderControl('Sepia', 'sepia', 0, 100, 0, '%')}
                     ${this.renderControl('Hue', 'hue-rotate', 0, 360, 0, 'deg')}
                     ${this.renderControl('Blur', 'blur', 0, 10, 0, 'px')}
+                    ${this.renderControl('Invert', 'invert', 0, 100, 0, '%')}
+                    ${this.renderControl('Opacity', 'opacity', 0, 100, 100, '%')}
                     ${this.renderControl('Vignette', 'vignette', 0, 150, 0, 'px')}
                 </div>` : ''}
                 ${this.settings.show_css ? `
@@ -142,7 +144,11 @@ class Filterun {
     }
 
     applyPreset(vals, el) {
-        const base = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0, 'hue-rotate': 0, blur: 0, vignette: 0 };
+        const base = {
+            brightness: 100, contrast: 100, saturate: 100, grayscale: 0,
+            sepia: 0, invert: 0, 'hue-rotate': 0, blur: 0, vignette: 0,
+            opacity: 100
+        };
         const final = { ...base, ...vals };
 
         if (this.settings.customize_filters) {
@@ -181,7 +187,6 @@ class Filterun {
 
         this.mainImg.style.filter = fStr;
 
-        // Update the CSS Variable on the container to affect the ::after layer
         this.previewContainer.style.setProperty('--fltrn-vignette', `inset 0 0 ${vVal}px rgba(0,0,0,0.8)`);
 
         if (this.settings.show_css) {
