@@ -1,37 +1,47 @@
-body.filterun-body {
-    background-color: #1a1a1a;
-    color: white;
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    padding: 20px;
-}
-
 :root {
-    --fltrn-bg: #18181b;
-    --fltrn-panel-bg: #27272a;
-    --fltrn-accent: #3b82f6;
-    --fltrn-text: #f4f4f5;
-    --fltrn-text-muted: #a1a1aa;
-    --fltrn-border: #3f3f46;
+    --fltrn-bg: #111111;
+    --fltrn-panel: #1a1a1a;
+    --fltrn-accent: #3e63dd;
+    --fltrn-border: #333333;
+    --fltrn-text: #eeeeee;
+    --fltrn-text-dim: #888888;
 }
 
 .fltrn-wrapper {
-    max-width: 900px;
+    max-width: 550px;
     margin: 20px auto;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--fltrn-bg);
     color: var(--fltrn-text);
-    padding: 20px;
-    border-radius: 16px;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+}
+
+.fltrn-preview-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.fltrn-preview-container::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    border-radius: inherit;
+    transition: box-shadow 0.2s ease;
+    /* Using CSS variable for dynamic control */
+    box-shadow: var(--fltrn-vignette, inset 0 0 0 rgba(0,0,0,0.7));
 }
 
 .fltrn-preview-container img {
     width: 100%;
-    border-radius: 12px;
     display: block;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    background: #000;
 }
 
 .fltrn-toggle-btn {
@@ -39,116 +49,111 @@ body.filterun-body {
     background: var(--fltrn-accent);
     color: white;
     border: none;
-    padding: 12px;
+    padding: 14px;
     margin-top: 20px;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
-    transition: opacity 0.2s;
+    font-size: 14px;
 }
 
-.fltrn-toggle-btn:hover { opacity: 0.9; }
-
 .fltrn-panel {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid var(--fltrn-border);
+    margin-top: 24px;
 }
 
 .fltrn-is-hidden { display: none; }
 
-/* Horizontal Presets List */
 .fltrn-presets-list {
     display: flex;
     gap: 12px;
     overflow-x: auto;
-    padding-bottom: 12px;
-    margin-bottom: 20px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--fltrn-border) transparent;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
 }
 
-/* Custom Scrollbar for Chrome/Safari */
 .fltrn-presets-list::-webkit-scrollbar { height: 4px; }
-.fltrn-presets-list::-webkit-scrollbar-track { background: transparent; }
-.fltrn-presets-list::-webkit-scrollbar-thumb {
-    background: var(--fltrn-border);
-    border-radius: 10px;
-}
+.fltrn-presets-list::-webkit-scrollbar-thumb { background: var(--fltrn-border); border-radius: 10px; }
 
-.fltrn-preset-item {
-    flex: 0 0 80px;
-    cursor: pointer;
-    text-align: center;
-}
+.fltrn-preset-item { flex: 0 0 75px; cursor: pointer; text-align: center; }
 
 .fltrn-preset-preview {
-    width: 80px;
-    height: 80px;
-    border-radius: 8px;
+    width: 75px;
+    height: 75px;
+    border-radius: 4px;
     overflow: hidden;
     border: 2px solid transparent;
-    transition: all 0.2s ease;
-    background: #000;
+    transition: 0.2s;
 }
 
-.fltrn-preset-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+.fltrn-preset-item.is-active .fltrn-preset-preview { border-color: var(--fltrn-accent); transform: scale(0.95); }
 
-.fltrn-preset-item.is-active .fltrn-preset-preview {
-    border-color: var(--fltrn-accent);
-    transform: scale(0.95);
-}
+.fltrn-preset-preview img { width: 100%; height: 100%; object-fit: cover; }
 
-.fltrn-preset-label {
-    font-size: 11px;
-    margin-top: 6px;
-    color: var(--fltrn-text-muted);
-}
+.fltrn-preset-label { font-size: 10px; margin-top: 6px; color: var(--fltrn-text-dim); text-transform: uppercase; }
 
-.fltrn-preset-item.is-active .fltrn-preset-label {
-    color: var(--fltrn-accent);
-    font-weight: bold;
-}
-
-/* Controls Grid */
 .fltrn-controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+    margin-bottom: 20px;
 }
 
 .fltrn-control-group label {
     display: flex;
     justify-content: space-between;
-    font-size: 11px;
+    font-size: 10px;
+    margin-bottom: 6px;
+    color: var(--fltrn-text-dim);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 8px;
-    color: var(--fltrn-text-muted);
 }
 
-.fltrn-control-group span { color: var(--fltrn-text); }
-
-/* Stylish Range Inputs */
 .fltrn-range {
     -webkit-appearance: none;
     width: 100%;
     background: var(--fltrn-border);
-    height: 4px;
+    height: 3px;
     border-radius: 2px;
     outline: none;
 }
 
 .fltrn-range::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    background: var(--fltrn-accent);
+    width: 12px;
+    height: 12px;
+    background: var(--fltrn-text);
     border-radius: 50%;
     cursor: pointer;
-    border: 2px solid var(--fltrn-bg);
+    border: 2px solid var(--fltrn-accent);
 }
+
+.fltrn-css-output {
+    background: #000;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 11px;
+    position: relative;
+    border: 1px solid var(--fltrn-border);
+    margin-top: 20px;
+    color: #10b981;
+    word-break: break-all;
+}
+
+.fltrn-copy-btn {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    background: var(--fltrn-panel);
+    border: 1px solid var(--fltrn-border);
+    color: var(--fltrn-text);
+    padding: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fltrn-copy-btn:hover { background: var(--fltrn-border); }
+
+.fltrn-copy-btn svg { width: 14px; height: 14px; fill: currentColor; }

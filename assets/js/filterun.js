@@ -1,128 +1,192 @@
-const FILTERUN_TEMPLATE = `
-    <button type="button" class="fltrn-toggle-btn" id="fltrn-btn-toggle">Adjust Image</button>
-    
-    <div class="fltrn-panel fltrn-is-hidden" id="fltrn-main-panel">
-        <div class="fltrn-presets-list" id="fltrn-presets"></div>
+class Filterun {
+    constructor(selector, config = {}) {
+        this.container = document.querySelector(selector);
+        if (!this.container) return;
 
-        <div class="fltrn-controls">
-            <div class="fltrn-control-group">
-                <label>Brightness <span class="val">100%</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-brght" min="0" max="200" value="100" data-filter="brightness" data-unit="%">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Contrast <span class="val">100%</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-cntrst" min="0" max="200" value="100" data-filter="contrast" data-unit="%">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Saturation <span class="val">100%</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-sat" min="0" max="200" value="100" data-filter="saturate" data-unit="%">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Grayscale <span class="val">0%</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-gray" min="0" max="100" value="0" data-filter="grayscale" data-unit="%">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Sepia <span class="val">0%</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-sepia" min="0" max="100" value="0" data-filter="sepia" data-unit="%">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Invert <span class="val">0%</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-inv" min="0" max="100" value="0" data-filter="invert" data-unit="%">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Hue <span class="val">0deg</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-hue" min="0" max="360" value="0" data-filter="hue-rotate" data-unit="deg">
-            </div>
-            <div class="fltrn-control-group">
-                <label>Blur <span class="val">0px</span></label>
-                <input type="range" class="fltrn-range" id="fltrn-blur" min="0" max="10" value="0" data-filter="blur" data-unit="px">
-            </div>
-        </div>
-    </div>
-`;
-
-// Значення для пресетів (тепер у форматі об'єктів для синхронізації)
-const PRESETS_DATA = [
-    { name: 'Default', vals: { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0, 'hue-rotate': 0, blur: 0 } },
-    { name: 'Chrome', vals: { brightness: 110, contrast: 120, saturate: 130 } },
-    { name: 'Noir', vals: { grayscale: 100, contrast: 130, brightness: 90 } },
-    { name: 'Retro', vals: { sepia: 60, contrast: 90, brightness: 110, saturate: 80 } },
-    { name: 'Vivid', vals: { saturate: 180, contrast: 110 } },
-    { name: 'Cold', vals: { 'hue-rotate': 180, saturate: 90, brightness: 110 } },
-    { name: 'Warm', vals: { sepia: 40, 'hue-rotate': -30, saturate: 120 } },
-    { name: 'X-Process', vals: { invert: 10, contrast: 140, saturate: 150, hue: 20 } },
-    { name: 'Misty', vals: { blur: 2, brightness: 120, saturate: 80 } },
-    { name: 'Night', vals: { brightness: 60, 'hue-rotate': 220, saturate: 140 } }
-];
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.js-filterun').forEach(container => initFilterun(container));
-});
-
-function initFilterun(container) {
-    const mainImg = container.querySelector('img');
-    container.insertAdjacentHTML('beforeend', FILTERUN_TEMPLATE);
-
-    const panel = container.querySelector('#fltrn-main-panel');
-    const toggleBtn = container.querySelector('#fltrn-btn-toggle');
-    const presetsList = container.querySelector('#fltrn-presets');
-    const inputs = container.querySelectorAll('.fltrn-range');
-
-    toggleBtn.addEventListener('click', () => panel.classList.toggle('fltrn-is-hidden'));
-
-    // Функція оновлення зображення
-    const update = () => {
-        let filterString = '';
-        inputs.forEach(input => {
-            const val = input.value;
-            const unit = input.dataset.unit;
-            const type = input.dataset.filter;
-            filterString += `${type}(${val}${unit}) `;
-            input.parentElement.querySelector('.val').innerText = val + unit;
-        });
-        mainImg.style.filter = filterString;
-
-        // Знімаємо клас активності з пресетів, якщо користувач крутить повзунки вручну
-        container.querySelectorAll('.fltrn-preset-item').forEach(i => i.classList.remove('is-active'));
-    };
-
-    // Генеруємо пресети
-    PRESETS_DATA.forEach((data, index) => {
-        const item = document.createElement('div');
-        item.className = `fltrn-preset-item ${index === 0 ? 'is-active' : ''}`;
-
-        // Створюємо рядок фільтру для мініатюри
-        const thumbFilter = Object.entries(data.vals).map(([k, v]) => {
-            const unit = k === 'hue-rotate' ? 'deg' : (k === 'blur' ? 'px' : '%');
-            return `${k}(${v}${unit})`;
-        }).join(' ');
-
-        item.innerHTML = `
-            <div class="fltrn-preset-preview">
-                <img src="${mainImg.src}" style="filter: ${thumbFilter}">
-            </div>
-            <span class="fltrn-preset-label">${data.name}</span>
-        `;
-
-        item.onclick = () => {
-            container.querySelectorAll('.fltrn-preset-item').forEach(i => i.classList.remove('is-active'));
-            item.classList.add('is-active');
-            applyPresetValues(container, data.vals);
-            update();
+        this.settings = {
+            show_css: config.show_css !== undefined ? config.show_css : true,
+            customize_filters: config.customize_filters !== undefined ? config.customize_filters : true,
+            presets: config.presets || 'all'
         };
-        presetsList.appendChild(item);
-    });
 
-    inputs.forEach(input => input.addEventListener('input', update));
-}
+        this.mainImg = this.container.querySelector('img');
+        this.previewContainer = this.container.querySelector('.fltrn-preview-container');
 
-function applyPresetValues(container, values) {
-    // Скидаємо всі інпути до дефолту перед застосуванням пресету
-    const defaults = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0, 'hue-rotate': 0, blur: 0 };
-    const finalValues = { ...defaults, ...values };
+        this.allPresets = [
+            { id: 'normal', name: 'Normal', vals: { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0, 'hue-rotate': 0, blur: 0, vignette: 0 } },
+            { id: 'clarity', name: 'Clarity', vals: { brightness: 115, saturate: 125, contrast: 110 } },
+            { id: 'haze', name: 'Haze', vals: { sepia: 15, brightness: 105, saturate: 85, contrast: 90, vignette: 40 } },
+            { id: 'airy', name: 'Airy', vals: { brightness: 120, contrast: 85, sepia: 10, saturate: 95 } },
+            { id: 'focus', name: 'Focus', vals: { brightness: 105, contrast: 115, saturate: 110, vignette: 100 } },
+            { id: 'matte', name: 'Matte', vals: { grayscale: 100, brightness: 105, contrast: 90, sepia: 10, vignette: 50 } },
+            { id: 'clean', name: 'Clean', vals: { saturate: 85, contrast: 110, brightness: 105 } },
+            { id: 'melancholy', name: 'Melancholy', vals: { 'hue-rotate': 190, saturate: 80, brightness: 100, contrast: 105, vignette: 30 } },
+            { id: 'cinema', name: 'Cinema', vals: { sepia: 20, contrast: 115, brightness: 95, saturate: 85, vignette: 60 } },
+            { id: 'sunkissed', name: 'Sun-kissed', vals: { saturate: 70, sepia: 15, brightness: 105, contrast: 95 } },
+            { id: 'fresh', name: 'Fresh', vals: { 'hue-rotate': -10, brightness: 102, saturate: 105 } },
+            { id: 'faded', name: 'Faded', vals: { saturate: 40, brightness: 110, contrast: 95 } },
+            { id: 'rosie', name: 'Rosie', vals: { sepia: 25, 'hue-rotate': -30, brightness: 110, saturate: 110, vignette: 20 } },
+            { id: 'nordic', name: 'Nordic', vals: { saturate: 60, brightness: 105, contrast: 105, 'hue-rotate': 10 } },
+            { id: 'drama', name: 'Drama', vals: { contrast: 150, brightness: 85, saturate: 90, vignette: 80 } },
+            { id: 'softgrey', name: 'Soft Grey', vals: { grayscale: 80, contrast: 100, brightness: 105 } },
+            { id: 'bluemist', name: 'Blue Mist', vals: { saturate: 30, 'hue-rotate': 190, brightness: 105, blur: 0.2, vignette: 40 } },
+            { id: 'ashbury', name: 'Ashbury', vals: { sepia: 20, saturate: 120, brightness: 100, contrast: 110, vignette: 30 } },
+            { id: 'lumen', name: 'Lumen', vals: { brightness: 130, saturate: 110, contrast: 90 } },
+            { id: 'vivid', name: 'Vivid', vals: { saturate: 150, brightness: 105 } },
+            { id: 'bold', name: 'Bold', vals: { contrast: 140, saturate: 130, vignette: 20 } },
+            { id: 'urban', name: 'Urban', vals: { contrast: 125, brightness: 90, saturate: 120, 'hue-rotate': 200, vignette: 70 } },
+            { id: 'autumn', name: 'Autumn', vals: { sepia: 30, saturate: 140, 'hue-rotate': -15 } },
+            { id: 'ink', name: 'Ink', vals: { grayscale: 100, contrast: 120, brightness: 95, vignette: 50 } },
+            { id: 'yummy', name: 'Yummy', vals: { saturate: 160, brightness: 110, contrast: 105 } },
+            { id: 'dusty', name: 'Dusty', vals: { sepia: 20, brightness: 110, contrast: 85, blur: 0.4, vignette: 40 } }
+        ];
 
-    Object.entries(finalValues).forEach(([filterName, value]) => {
-        const input = container.querySelector(`[data-filter="${filterName}"]`);
-        if (input) input.value = value;
-    });
+        this.init();
+    }
+
+    init() {
+        this.render();
+        this.bindEvents();
+    }
+
+    render() {
+        let presetsToRender = this.allPresets;
+        if (Array.isArray(this.settings.presets)) {
+            presetsToRender = this.allPresets.filter(p => this.settings.presets.includes(p.id));
+        }
+
+        const template = `
+            <button type="button" class="fltrn-toggle-btn">Adjust Filters</button>
+            <div class="fltrn-panel fltrn-is-hidden">
+                <div class="fltrn-presets-list"></div>
+                ${this.settings.customize_filters ? `
+                <div class="fltrn-controls">
+                    ${this.renderControl('Brightness', 'brightness', 0, 200, 100, '%')}
+                    ${this.renderControl('Contrast', 'contrast', 0, 200, 100, '%')}
+                    ${this.renderControl('Saturation', 'saturate', 0, 200, 100, '%')}
+                    ${this.renderControl('Grayscale', 'grayscale', 0, 100, 0, '%')}
+                    ${this.renderControl('Sepia', 'sepia', 0, 100, 0, '%')}
+                    ${this.renderControl('Hue', 'hue-rotate', 0, 360, 0, 'deg')}
+                    ${this.renderControl('Blur', 'blur', 0, 10, 0, 'px')}
+                    ${this.renderControl('Vignette', 'vignette', 0, 150, 0, 'px')}
+                </div>` : ''}
+                ${this.settings.show_css ? `
+                <div class="fltrn-css-output">
+                    <code id="fltrn-code-display">filter: none;</code>
+                    <button class="fltrn-copy-btn" title="Copy to clipboard">
+                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                    </button>
+                </div>` : ''}
+            </div>`;
+
+        this.container.insertAdjacentHTML('beforeend', template);
+        this.renderPresets(presetsToRender);
+    }
+
+    renderControl(label, filter, min, max, value, unit) {
+        return `
+            <div class="fltrn-control-group">
+                <label>${label} <span class="val">${value}${unit}</span></label>
+                <input type="range" class="fltrn-range" data-filter="${filter}" data-unit="${unit}" min="${min}" max="${max}" value="${value}">
+            </div>`;
+    }
+
+    renderPresets(listToRender) {
+        const listEl = this.container.querySelector('.fltrn-presets-list');
+        listToRender.forEach((p, idx) => {
+            const item = document.createElement('div');
+            item.className = `fltrn-preset-item ${idx === 0 ? 'is-active' : ''}`;
+
+            const fStr = Object.entries(p.vals).filter(([k]) => k !== 'vignette')
+                .map(([k, v]) => `${k}(${v}${this.getUnit(k)})`).join(' ');
+            const vStr = `inset 0 0 ${p.vals.vignette || 0}px rgba(0,0,0,0.7)`;
+
+            item.innerHTML = `
+                <div class="fltrn-preset-preview" style="position:relative">
+                    <img src="${this.mainImg.src}" style="filter: ${fStr}">
+                    <div style="position:absolute;top:0;left:0;width:100%;height:100%;box-shadow:${vStr};pointer-events:none"></div>
+                </div>
+                <div class="fltrn-preset-label">${p.name}</div>`;
+
+            item.onclick = () => this.applyPreset(p.vals, item);
+            listEl.appendChild(item);
+        });
+    }
+
+    getUnit(key) {
+        if (key === 'hue-rotate') return 'deg';
+        if (key === 'blur' || key === 'vignette') return 'px';
+        return '%';
+    }
+
+    bindEvents() {
+        const btn = this.container.querySelector('.fltrn-toggle-btn');
+        const panel = this.container.querySelector('.fltrn-panel');
+        btn.onclick = () => panel.classList.toggle('fltrn-is-hidden');
+
+        if (this.settings.customize_filters) {
+            this.container.querySelectorAll('.fltrn-range').forEach(input => {
+                input.oninput = () => {
+                    this.update();
+                    this.container.querySelectorAll('.fltrn-preset-item').forEach(i => i.classList.remove('is-active'));
+                };
+            });
+        }
+
+        if (this.settings.show_css) {
+            this.container.querySelector('.fltrn-copy-btn').onclick = () => {
+                const text = this.container.querySelector('#fltrn-code-display').innerText;
+                navigator.clipboard.writeText(text);
+            };
+        }
+    }
+
+    applyPreset(vals, el) {
+        const base = { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0, invert: 0, 'hue-rotate': 0, blur: 0, vignette: 0 };
+        const final = { ...base, ...vals };
+
+        if (this.settings.customize_filters) {
+            Object.entries(final).forEach(([k, v]) => {
+                const input = this.container.querySelector(`[data-filter="${k}"]`);
+                if (input) input.value = v;
+            });
+        } else {
+            this.activePresetVals = final;
+        }
+
+        this.container.querySelectorAll('.fltrn-preset-item').forEach(i => i.classList.remove('is-active'));
+        el.classList.add('is-active');
+        this.update(final);
+    }
+
+    update(manualVals = null) {
+        let fStr = '';
+        let vVal = 0;
+
+        if (this.settings.customize_filters) {
+            this.container.querySelectorAll('.fltrn-range').forEach(input => {
+                const v = input.value;
+                const u = input.dataset.unit;
+                const t = input.dataset.filter;
+                if (t === 'vignette') vVal = v;
+                else fStr += `${t}(${v}${u}) `;
+                input.parentElement.querySelector('.val').innerText = v + u;
+            });
+        } else if (manualVals) {
+            Object.entries(manualVals).forEach(([k, v]) => {
+                if (k === 'vignette') vVal = v;
+                else fStr += `${k}(${v}${this.getUnit(k)}) `;
+            });
+        }
+
+        this.mainImg.style.filter = fStr;
+
+        // Update the CSS Variable on the container to affect the ::after layer
+        this.previewContainer.style.setProperty('--fltrn-vignette', `inset 0 0 ${vVal}px rgba(0,0,0,0.8)`);
+
+        if (this.settings.show_css) {
+            const out = `filter: ${fStr.trim()};\nbox-shadow: inset 0 0 ${vVal}px rgba(0,0,0,0.8);`;
+            this.container.querySelector('#fltrn-code-display').innerText = out;
+        }
+    }
 }

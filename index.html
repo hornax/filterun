@@ -4,17 +4,34 @@
     <meta charset="UTF-8">
     <title>Filterun</title>
     <link rel="stylesheet" href="assets/css/filterun.css">
+    <style>
+        body.filterun-body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body class="filterun-body">
 
 <div class="editor-container">
     <div class="fltrn-wrapper js-filterun">
         <div class="fltrn-preview-container">
-            <img src="https://picsum.photos/id/364/5000/2917" alt="Preview">
+            <img src="https://picsum.photos/id/8/5000/3333" alt="Preview">
         </div>
     </div>
 </div>
 
-<script src="assets/js/filterun.js" defer></script>
+<script src="assets/js/filterun.js"></script>
+<script>
+    const filter = new Filterun('.js-filterun', {
+        show_css: true,
+        customize_filters: true,
+        presets: 'all' //['normal', 'clarity', 'ink', 'drama'] // only these 4 will show
+    });
+</script>
 </body>
 </html>
